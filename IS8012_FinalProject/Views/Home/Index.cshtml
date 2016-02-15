@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<h2>Personal Manager</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <img class="img-responsive img-thumbnail" src="~/Content/manager1.jpg" />
+        <small><a class="text-muted" href="@Url.Action("index", "home")" target="_blank">Personal Manager</a></small>
+    </div>
+    <div class="col-md-6">
+        <div class="row">
+            <div class="panel panel-info" style="margin-top: 20px; background-color:gray">
+                <div class="panel-body bg-info">
+                    <p>
+                        The Personal Manager with its <b><u>Expense Manager</u></b> provides
+                        an easy way to manage your expenses and allocate and track your them so that you can
+                        manage your expense and ensure that you have the funds to cover the important
+                        expenses <strong>and</strong> save up for those <em>fun</em> extras along the way.
+                        Our system provides:
+                    </p>
+
+                    <ul>
+                        <li>Provision to Create and Save Expense Reports in Word and Excel</li>
+                        <li>Deeper insights into your spending using graphs</li>
+                        <li>Fun tracking system</li>
+                        <li>Become accountable for your spending</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+            <div class="col-md-6 text-center">
+                <i class="glyphicon glyphicon-user" style="font-size: 5em;"></i>
+                <br />
+                <a class="btn btn-primary" href="@Url.Action("Register", "Account")"><i class="glyphicon glyphicon-plus"></i> Create an Account</a>
+            </div>
+
+            <div class="col-md-6 text-center">
+                <i class="glyphicon glyphicon-envelope" style="font-size: 5em;"></i>
+                <br />
+                <a class="btn btn-default" href="@Url.Action("Login", "Account")"><i class="glyphicon glyphicon-log-in"></i> Sign in</a>
+            </div>
+
+        </div>
+</div>

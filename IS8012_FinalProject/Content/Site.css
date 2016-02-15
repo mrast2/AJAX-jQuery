@@ -1,0 +1,29 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    color: white;
+    background: -webkit-linear-gradient(left, #003366 , #006666); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #003366, #006666); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, #003366, #006666); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #003366 , #006666); /* Standard syntax */
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}

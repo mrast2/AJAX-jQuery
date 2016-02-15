@@ -1,0 +1,26 @@
+﻿#largeArea {
+    background-color: white;
+    transition: background-color .5s;
+}
+
+input[type=button] {
+    width: 11em;  
+    height: 2em;
+}
+
+#addNewItem{
+    width: 9em;  
+    height: 2em;
+}
+#expenseCategoryList{
+    height: 3em;
+}
+
+@media (max-width: 600px)
+{
+    #background2 {
+        padding: 20px 5px 5px 5px;
+        transition: font-size .5s;
+        font-size: 60%;
+    }
+}

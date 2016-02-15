@@ -1,0 +1,18 @@
+<Expenses>
+  <Expense>
+    <ItemID>1</ItemID>
+    <ExpenseName>Insurance Expense</ExpenseName>
+    <UserName>mayank.rastogi88@gmail.com</UserName>
+    <ExpenseCategory>Insurance</ExpenseCategory>
+    <Amount>100</Amount>
+    <ExpenseDate>11-30-2015</ExpenseDate>
+  </Expense>
+  <Expense>
+    <ItemID>2</ItemID>
+    <ExpenseName>Tomatoes</ExpenseName>
+    <UserName>mayank.rastogi88@gmail.com</UserName>
+    <ExpenseCategory>Groceries</ExpenseCategory>
+    <Amount>5</Amount>
+    <ExpenseDate>12-04-2015</ExpenseDate>
+  </Expense>
+</Expenses>

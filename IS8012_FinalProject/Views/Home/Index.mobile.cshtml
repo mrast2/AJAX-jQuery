@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<h2>Personal Manager</h2>
+
+<div class="row">
+    <table>
+        <tr>
+            <td style="width:230px;height:200px;">
+                <div class="col-md-6">
+                    <img class="img-responsive img-thumbnail" src="~/Content/manager1.jpg" />
+                </div>
+            </td>
+            <td>
+                <div class="col-md-6 text-center">
+                    <br />
+                    <a class="btn btn-primary" href="@Url.Action("Register", "Account")"><i class="glyphicon glyphicon-plus"></i> Create an Account</a>
+                </div>
+                <div class="col-md-6 text-center">
+                    <br />
+                    <a class="btn btn-default" href="@Url.Action("Login", "Account")"><i class="glyphicon glyphicon-log-in"></i> Sign in</a>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="col-md-6">
+
+        <div class="panel panel-info" style="margin-top: 20px; background-color:gray">
+            <div class="panel-body bg-info">
+                <p>
+                    The Personal Manager with its <b><u>Expense Manager</u></b> provides
+                    an easy way to allocate and track your expenses so that you can
+                    manage your expenses and ensure that you have the funds to cover the important
+                    expenses <strong>and</strong> save up for those <em>fun</em> extras along the way.
+                    Our system provides:
+                </p>
+
+                <ul>
+                    <li>Provision to Create and Save Expense Reports in Word and Excel</li>
+                    <li>Deeper insights into your spending using graphs</li>
+                    <li>Fun tracking system</li>
+                    <li>Become accountable for your spending</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>

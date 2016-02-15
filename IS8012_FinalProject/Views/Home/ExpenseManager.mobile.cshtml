@@ -1,0 +1,250 @@
+﻿@{
+    ViewBag.Title = "Expense Manager";
+}
+
+<h3>ExpenseManager</h3>
+
+<div style="float:left">
+    <a id="addNewItem" href="#" style="font-size:12px;text-align:center" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i>Add Expense</a>
+    <input type="button" value="Manage Categories" style="font-size:12px;text-align:center" class="btn btn-default" onclick="location.href='@Url.Action("ManageCategory","Home")'" />
+</div>
+<br /><br />
+<div id="background2">
+    <form id="addItemForm" method="post" style="display:none;">
+        <div class="form-horizontal">
+            <h4>Add Expense</h4>
+            <hr />
+            <div style="display:none;" class="form-group">
+                <label class="control-label col-md-2">UserName</label>
+                <div class="col-md-10">
+                    <input name="UserName" value=@ViewBag.UserName id="userName" type="text" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Expense Name</label>
+                <div class="col-md-10">
+                    <input name="ExpenseName" id="expenseName" type="text" class="form-control" />
+                    <span style="display: none;">Please enter expense name</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Expense Category</label>
+                <div class="col-md-10">
+                    @*<input name="ExpenseCategory" id="expenseCategory" type="text" class="form-control">*@
+                    <select name="ExpenseCategory" id="expenseCategory" class="form-control" form="addItemForm">
+                        <option value="">Select one...</option>
+                        <option value="Groceries">Groceries</option>
+                        <option value="Stationary">Stationary</option>
+                        <option value="Gas">Gas</option>
+                        <option value="Insurance">Insurance</option>
+                        <option value="Payment">Payment</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Mortgage">Mortgage</option>
+                        <option value="FineDining">Fine Dining</option>
+                        <option value="Traveling">Traveling</option>
+                        <option value="Tuition">Tuition</option>
+                        <option value="Miscellaneous">Miscellaneous</option>
+                    </select>
+                    <span style="display: none;">Please enter an expense category</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">Enter Expense Amount</label>
+                <div class="col-md-10">
+                    <input name="Amount" id="expenseAmount" type="number" class="form-control" />
+                    <span style="display: none;">Please enter expense amount</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-md-2">Expense Date</label>
+                <div class="col-md-10">
+                    <input name="ExpenseDate" id="expenseDate" type="date" class="form-control" />
+                    <span style="display: none;">Please enter the Expense Date</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input id="addItem" type="submit" value="Create" class="btn btn-default" />
+                    <input id="cancel" type="submit" value="Cancel" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    </form>
+    <div style="float:right">
+        <span>Choose category</span>
+        <select id="expenseCategoryList" class="form-control" style="font-size:12px;text-align:center;width: 80px;">
+            <option value="">Select.</option>
+            <option value="Groceries">Groceries</option>
+            <option value="Stationary">Stationary</option>
+            <option value="Insurance">Insurance</option>
+            <option value="Payment">Payment</option>
+            <option value="Rent">Rent</option>
+            <option value="Mortgage">Mortgage</option>
+            <option value="FineDining">Fine Dining</option>
+            <option value="Traveling">Traveling</option>
+            <option value="Tuition">Tuition</option>
+            <option value="Miscellaneous">Miscellaneous</option>
+        </select>
+    </div>
+    <br /><br /><br />
+    <div id="divTableDataHolder">
+        <table class="table" id="itemList">
+            <tr>
+                <th>Expense Name</th>
+                <th>Expense Category</th>
+                <th>Expense Amount</th>
+                <th>Expense Date</th>
+                <th>Delete</th>
+            </tr>
+        </table>
+    </div>
+</div>
+<input id="createChart" type="button" value="Expense Report" class="btn btn-default" onclick="location.href='@Url.Action("ExpenseReport","Expense")'" />
+<br /><br />
+<div id="noMappingAvailable">
+    <p>Cannot map your location</p>
+</div>
+<div id="mappingAvailable" style="width: 270px; height: 220px;">
+    @*<img id="currentLocationMap" src="" />*@
+</div>
+
+@section scripts{
+<link rel="stylesheet" href="@Url.Content("~/content/lab.css")" />
+<script type="text/javascript" src="//www.google.fr/jsapi"></script>
+<script type="text/javascript">
+    google.load("maps", "3.4", {
+        other_params: "sensor=true&language=en"
+    });
+</script>
+<script type="text/javascript" src="~/Content/jquery.googlemap.js"></script>
+    <script>
+        $(function () {
+            if (Modernizr.geolocation) {
+                getLocationData(function (latitude, longitude) {
+                    var mapUrl = buildMapUrl(latitude, longitude);
+                    $("#mappingAvailable").googleMap({
+                        zoom: 12
+                    });
+                    $("#mappingAvailable").addMarker({
+                        coords: [latitude, longitude],
+                    });
+                });
+                $("#noMappingAvailable").hide();
+            }
+
+            $.getJSON('/Expense/GetExpenses', { UserName: $("#userName").val() }, function (contactsJsonPayload) {
+                $(contactsJsonPayload).each(function (i, item) {
+                    $("#itemList").append(lineItem(item));
+                });
+            });
+
+            $.getJSON('/ExpenseCategory/GetExpenseCategory', { UserName: $("#userName").val() }, function (contactsJsonPayload) {
+                $(contactsJsonPayload).each(function (i, item) {
+                    var option = $('<option value=' + item.CategoryName + '>' + item.CategoryName + '</option>');
+                    var option1 = $('<option value=' + item.CategoryName + '>' + item.CategoryName + '</option>');
+                    $("#expenseCategoryList").append(option);
+                    $("#expenseCategory").append(option1);
+                });
+            });
+        });
+
+        $('#addNewItem').click(function () {
+            $("#addItemForm").slideDown();
+            $("#addItemForm input").text("");
+            $(this).hide();
+        });
+
+        $("#cancel").click(function () {
+            $("#addItemForm").slideUp();
+            $("#addNewItem").show();
+        });
+
+        $("#addItem").click(function () {
+            var request = {
+                ExpenseName: $("#expenseName").val(),
+                ExpenseCategory: $("#expenseCategory").val(),
+                Amount: $("#expenseAmount").val(),
+                ExpenseDate: $("#expenseDate").val()
+            };
+            if (!(request.ExpenseName || request.Amount || request.ExpenseDate)) {
+                $("#addItemForm span").show();
+                return false;
+            }
+
+            $.post("/Expense/CreateExpense",
+                $("#addItemForm").serialize(),
+                function (value, status) {
+                    $("#itemList").append(lineItem(value));
+                    $("#addItemForm").hide();
+                    $("#addNewItem").show();
+                },
+                "json"
+                );
+        });
+
+        $("#itemList").on("click", "a.delete", function () {
+            var confirmation = confirm("Are you sure you want to delete the ToDo Item?");
+            var deleteItem = $(this);
+            var id = $(this).attr('item-id');
+            $.ajax({
+                url: "/Expense/Delete/" + id,
+                contentType: "application/json",
+                method: "DELETE"
+            }).done(function (response, status, xhr) {
+                $(deleteItem).parents('tr').remove();
+            }).error(function () {
+                console.log("on delete button")
+            });
+        });
+
+        $("#createChart").click(function () {
+            addGraph();
+        });
+
+        $("#expenseCategoryList").change(function() {
+            $.getJSON('/Expense/GetExpensesForCategory', { UserName: $("#userName").val(), category: $("#expenseCategoryList option:selected").val() }, function (contactsJsonPayload) {
+                console.log("Inside");
+                $("#itemList tr").slice(1).remove();
+                $(contactsJsonPayload).each(function (i, item) {
+                    console.log(item);
+                    $("#itemList").append(lineItem(item));
+                });
+            });
+        });
+
+        function buildMapUrl(latitude, longitude) {
+
+            var marker = latitude + "," + longitude;
+
+            var url = "http://maps.googleapis.com/maps/api/staticmap?";
+            url += "zoom=7&size=600x300&maptype=roadmap&sensor=true";
+            url += "&markers=" + marker;
+            return url;
+        }
+    
+        function getLocationData(callback) {
+            navigator.geolocation.getCurrentPosition(function(location) {
+                callback(location.coords.latitude, location.coords.longitude);
+            });
+        }
+
+        function lineItem(item) {
+            var tRow = $('<tr></tr>');
+            var deleteButton = $(' <td><a class="delete" item-id="' + item.ItemID + '" href="#">Delete Item</a></td>');
+            var expenseName = $(' <td><em>' + item.ExpenseName + '</em></td>');
+            var expenseCategory = $(' <td><em>' + item.ExpenseCategory + '</em></td>');
+            var expenseAmount = $(' <td>' + item.Amount + '</td>');
+            var re = /-?\d+/;
+            var m = re.exec(item.ExpenseDate);
+            var d = new Date(parseInt(m[0]));
+            var expenseDate = $(' <td>' + d.toDateString() + '</td>');;
+            tRow.append(expenseName);
+            tRow.append(expenseCategory);
+            tRow.append(expenseAmount);
+            tRow.append(expenseDate);
+            tRow.append(deleteButton);
+            return tRow;
+        }
+    </script>
+}

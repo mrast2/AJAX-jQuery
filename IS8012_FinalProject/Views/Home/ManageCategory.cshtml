@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "Manage Expense Category";
+}
+<h2>Manage Category</h2>
+
+<a id="addNewCategory" href="#" class="btn btn-default"><i class="glyphicon glyphicon-plus"></i>Add Category</a>
+<br />
+<form id="addCategoryForm" method="post" style="display:none;">
+    <div class="form-horizontal">
+        <h4>Add Expense Category</h4>
+        <hr />
+        <div style="display:none;" class="form-group">
+            <label class="control-label col-md-2">UserName</label>
+            <div class="col-md-10">
+                <input name="UserName" value=@ViewBag.UserName id="userName" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">Category Name</label>
+            <div class="col-md-10">
+                <input name="CategoryName" id="categoryName" type="text" class="form-control" />
+                <span style="display: none;">Please enter a Category Name</span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input id="addCategory" type="button" value="Create" class="btn btn-default" />
+            <input id="cancel" type="submit" value="Cancel" class="btn btn-default" />
+        </div>
+    </div>
+</form>
+<form id="editCategoryForm" method="put" style="display:none;">
+    <div class="form-horizontal">
+        <h4>Edit Expense Category</h4>
+        <hr />
+        <div style="display:none;" class="form-group">
+            <label class="control-label col-md-2">UserName</label>
+            <div class="col-md-10">
+                <input name="UserName" value=@ViewBag.UserName id="userNameEdit" type="text" class="form-control" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">Category Name</label>
+            <div class="col-md-10">
+                <input name="CategoryName" id="categoryNameEdit" type="text" class="form-control" />
+                <span style="display: none;">Please enter a Category Name</span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input id="editCategory" type="button" value="Create" class="btn btn-default" />
+            <input id="cancel" type="submit" value="Cancel" class="btn btn-default" />
+        </div>
+    </div>
+</form>
+<br /><br />
+<table class="table" id="categoryList">
+    <tr>
+        <th style="font:bold">Category Name</th>
+        <th style="font:bold">Delete</th>
+    </tr>
+</table>
+<p>
+    @Html.ActionLink("Back to Expense Manager", "ExpenseManager")
+</p>
+@section scripts{
+    <script>
+        $(function () {
+            $.getJSON('/ExpenseCategory/GetExpenseCategory', { UserName: $("#userName").val() }, function (contactsJsonPayload) {
+                $(contactsJsonPayload).each(function (i, item) {
+                    $("#categoryList").append(lineItem(item));
+                });
+            });
+        });
+
+        $('#addNewCategory').click(function () {
+            $("#addCategoryForm").slideDown();
+            $("#addCategoryForm input").text("");
+            $(this).hide();
+        });
+
+        $("#addCategory").click(function () {
+            $.post("/ExpenseCategory/CreateExpenseCategory",
+                $("#addCategoryForm").serialize(),
+                function (value, status) {
+                    $("#categoryList").append(lineItem(value));
+                    $("#addCategoryForm input").text("");
+                    $("#addCategoryForm").hide();
+                    $("#addNewCategory").show();
+                },
+                "json"
+                );
+        });
+
+        $("#cancel").click(function () {
+            $("#addItemForm").hide();
+            $("#addNewCategory").show();
+            $("#addCategoryForm input").text("");
+        });
+
+        $("#categoryList").on("click", "a.delete", function () {
+            var confirmation = confirm("Are you sure you want to delete the category?");
+            var deleteCategory = $(this);
+            var id = $(this).attr('category-id');
+            $.ajax({
+                url: "/ExpenseCategory/DeleteCategory/" + id,
+                contentType: "application/json",
+                method: "DELETE"
+            }).done(function (response, status, xhr) {
+                $(deleteCategory).parents('tr').remove();
+            }).error(function () {
+                console.log("on delete button")
+            });
+        });
+
+
+        function lineItem(item) {
+            var tRow = $('<tr></tr>');
+            var deleteButton = $(' <td><a class="delete" category-id="' + item.CategoryId + '" href="#">Delete Category</a></td>');
+            var category = $(' <td><em>' + item.CategoryName + '</em></td>');
+            tRow.append(category);
+            tRow.append(deleteButton);
+            return tRow;
+        }
+    </script>
+}
+

@@ -1,0 +1,147 @@
+﻿@model System.Data.DataTable
+
+@{
+    ViewBag.Title = "Expense Report";
+}
+
+<h2>Expense Report</h2>
+
+<div style="display:none;" class="form-group">
+    <div class="col-md-10">
+        <input name="UserName" value=@ViewBag.UserName id="userName" type="text" class="form-control" />
+    </div>
+</div>
+
+<span>Select a period :</span>
+<div>
+    <input name="dueDateFrom" id="dueDateFrom" type="date" class="form-control" style="display:table" />
+    <span style="display:none;" id="startDate">Please select a start date</span>
+    <span>To</span>
+    <input name="dueDateTo" id="dueDateTo" type="date" class="form-control" style="display:table" />
+    <span style="display:none;" id="endDate">Please select a End date</span>
+</div>
+<br />
+<div>
+    <a id="createWordReport" href="#" class="btn btn-default"><i class="glyphicon glyphicon-pencil"></i>Get Word Report</a>
+    <a id="createExcelReport" href="#" class="btn btn-default"><i class="glyphicon glyphicon-pencil"></i>Get Excel Report</a>
+</div>
+<div id="expenses">
+</div>
+<div id='jqxChart' style="width: 680px; height: 400px ">
+</div>
+<p>
+    @Html.ActionLink("Back to Expense Manager", "ExpenseManager")
+</p>
+
+@section scripts{
+    <link rel="stylesheet" href="../jqwidgets/styles/jqx.base.css" type="text/css" />
+    <script type="text/javascript" src="../jqwidgets/jqxcore.js"></script>
+    <script type="text/javascript" src="../jqwidgets/jqxdata.js"></script>
+    <script type="text/javascript" src="../jqwidgets/jqxchart.js"></script>
+    <script>
+        //Handling Click event of button for generating Expense Reports
+        $("#createWordReport").click(function () {
+            var request = {
+                dueDateFrom: $("#dueDateFrom").val(),
+                dueDateTo: $("#dueDateTo").val(),
+            };
+            if (!(request.dueDateFrom || request.dueDateTo)) {
+                $("#startDate").show();
+                $("#endDate").show();
+                return false;
+            }
+
+            //Internal call to Home Controller which uses Web Service to get expenses between two dates for a user.
+            $.get("/Expense/CreateReport", { startDate: $("#dueDateFrom").val(), endDate: $("#dueDateTo").val() },
+                function () {
+                    var content = $("#expenses");
+                    content.load("/Content/Expenses.html",
+                        function (response) {
+                            content.html(response);
+                        });
+                });
+            var confirmation = confirm("ExpenseReport.docx is downloaded to the Downloads Folder!!");
+            var source = {
+                datafields: [
+                        { name: 'ExpenseCategory'},
+                        { name: 'Amount' }
+                ],
+                root: "Expenses",
+                record: "Expense",
+                datatype: "xml",
+                url: '../Content/CategoryData.xml'
+            }
+
+            var dataAdapter = new $.jqx.dataAdapter(source);
+
+            // prepare jqxChart settings
+            var settings = {
+                title: "Expense Details",
+                showLegend: true,
+                source: dataAdapter,
+                categoryAxis:
+                    {
+                        dataField: 'ExpenseCategory',
+                        displayText: 'Category',
+                        showGridLines: true
+                    },
+
+                colorScheme: 'scheme04',
+                seriesGroups:
+                    [
+                        {
+                            type: 'column',
+                            valueAxis:
+                            {
+                                displayValueAxis: true,
+                                tickMarksColor: '#888888'
+                            },
+                            series: [
+                                    { dataField: 'Amount', displayText: 'Amount' }
+                            ]
+                        }
+                    ]
+            };
+            // setup the chart
+            $('#jqxChart').jqxChart(settings);
+        });
+
+        function lineItem(item) {
+            var tRow = $('<tr></tr>');
+            var deleteButton = $(' <td><a class="delete" item-id="' + item.ItemID + '" href="#">Delete Item</a></td>');
+            var expenseName = $(' <td><em>' + item.ExpenseName + '</em></td>');
+            var expenseCategory = $(' <td><em>' + item.ExpenseCategory + '</em></td>');
+            var expenseAmount = $(' <td>' + item.Amount + '</td>');
+            var expenseDate = $(' <td>' + item.ExpenseDate.split('T')[0] + '</td>');;
+            tRow.append(expenseName);
+            tRow.append(expenseCategory);
+            tRow.append(expenseAmount);
+            tRow.append(expenseDate);
+            return tRow;
+        }
+
+        $("#createExcelReport").click(function (e) {
+            var request = {
+                dueDateFrom: $("#dueDateFrom").val(),
+                dueDateTo: $("#dueDateTo").val(),
+            };
+            if (!(request.dueDateFrom || request.dueDateTo)) {
+                $("#startDate").show();
+                $("#endDate").show();
+                return false;
+            }
+            window.open('data:application/vnd.ms-excel,' + encodeURIComponent($('div[id$=expenses]').html()));
+            e.preventDefault();
+        });
+
+        $("#dueDateTo").change(
+           function () {
+               var fromDate = $('#dueDateFrom').val();
+               var toDate = $('#dueDateTo').val();
+
+               if (toDate <= fromDate) {
+                   alert("To date should be more than the From Date");
+               }
+           });
+    </script>
+}
